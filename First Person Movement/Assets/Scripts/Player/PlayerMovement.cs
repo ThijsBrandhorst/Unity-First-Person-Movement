@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour {
     public float walkSpeed;
     public float sprintSpeed;
     public float slideSpeed;
+    public float wallrunSpeed;
 
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
@@ -35,7 +36,6 @@ public class PlayerMovement : MonoBehaviour {
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
 
     [Header("Slope Handling")]
     public float maxSlopeAngle;
@@ -56,13 +56,17 @@ public class PlayerMovement : MonoBehaviour {
     public enum MovementState {
         walking,
         sprinting,
+        wallrunning,
         crouching,
         sliding,
         air
     }
 
     [HideInInspector]
+    public bool grounded;
+
     public bool sliding;
+    public bool wallrunning;
 
     private void Start() {
         rb = GetComponent<Rigidbody>();
@@ -119,8 +123,14 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void StateHandler() {
+        // Wallrunning
+        if (wallrunning) {
+            state = MovementState.wallrunning;
+            desiredMoveSpeed = wallrunSpeed;
+        }
+
         // Sliding
-        if (sliding) {
+        else if (sliding) {
             state = MovementState.sliding;
 
             if (OnSlope() && rb.linearVelocity.y < 0.1f)
