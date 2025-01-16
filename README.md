@@ -5,6 +5,7 @@ This is a first-person character controller designed for Unity 6. It includes a 
 The project is ideal for developers looking to implement advanced movement mechanics or use this as a starting point for their own games.
 
 **Features**
+
     - Basic Movement: Walking, sprinting, crouching.
     - Sliding: Momentum-based sliding, works on slopes and flat surfaces.
     - Wall Running: Supports left, right, upward, and downward wall running.
@@ -15,9 +16,11 @@ The project is ideal for developers looking to implement advanced movement mecha
 
 **Getting Started**
 Prerequisites
+
     - Unity 6 or later.
 
 Installation
+
     Clone the repository:
     git clone https://github.com/ThijsBrandhorst/Unity-First-Person-Movement.git
     Open the project in Unity.
@@ -25,22 +28,26 @@ Installation
 
 **Mechanics Overview**
 Movement
+
     Walking and Sprinting: Standard first-person movement with adjustable speeds.
     Crouching: Adjusts player height and movement speed dynamically.
     Sliding: Works with flat surfaces and slopes, uses momentum for realistic behavior.
 
 Advanced Features
+
     Wall Running: Allows for running along vertical surfaces. Adjustable time limits, force, and detection.
     Wall Jumping: Works with wall detection to enable jumping between surfaces.
     Climbing: Includes ledge detection and smooth animations for climbing walls or grabbing ledges.
 
 Grappling and Swinging
+
     Grappling Hook: Pull the player toward specific surfaces or swing from them.
     Dual Swinging: Grapple to two points simultaneously for advanced movement.
 
 **Customization**
 
 All mechanics are adjustable through the Unity Inspector. Key parameters include:
+
     Movement speeds (walking, sprinting, crouching).
     Jump force and cooldown.
     Wall run duration and force.
