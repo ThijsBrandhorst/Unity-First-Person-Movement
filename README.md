@@ -1,6 +1,7 @@
 # First-Person Character Controller for Unity 6
 
 **About:**
+
 This is a first-person character controller designed for Unity 6. It includes a wide range of movement mechanics, making it a versatile template for various projects. The controller is scalable and easily customizable, with well-structured code and parameters that can be adjusted in the Unity Inspector.
 The project is ideal for developers looking to implement advanced movement mechanics or use this as a starting point for their own games.
 
@@ -15,6 +16,7 @@ The project is ideal for developers looking to implement advanced movement mecha
     - Dual Swinging: Use two grapples simultaneously for complex traversal.
 
 **Getting Started**
+
 Prerequisites
 
     - Unity 6 or later.
@@ -27,6 +29,7 @@ Installation
     Load the game scene to test all the features.
 
 **Mechanics Overview**
+
 Movement
 
     Walking and Sprinting: Standard first-person movement with adjustable speeds.
@@ -54,6 +57,5 @@ All mechanics are adjustable through the Unity Inspector. Key parameters include
     Grappling hook range and speed.
 
 You can also expand the controller with new features or integrate it into your own game by modifying the included scripts.
-Project Structure
 
 Feel free to tweak or add any details to suit your style.
