@@ -4,13 +4,14 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
     [Header("Movement")]
     private float moveSpeed;
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
     public float slideSpeed;
     public float wallrunSpeed;
-
-    private float desiredMoveSpeed;
-    private float lastDesiredMoveSpeed;
+    public float climbSpeed;
+    public float airMinSpeed;
 
     public float speedIncreaseMultiplier;
     public float slopeIncreaseMultiplier;
@@ -42,6 +43,9 @@ public class PlayerMovement : MonoBehaviour {
     private RaycastHit slopeHit;
     private bool exitingSlope;
 
+    [Header("References")]
+    public Climbing climbingScript;
+
     public Transform orientation;
 
     float horizontalInput;
@@ -57,6 +61,7 @@ public class PlayerMovement : MonoBehaviour {
         walking,
         sprinting,
         wallrunning,
+        climbing,
         crouching,
         sliding,
         air
@@ -68,6 +73,8 @@ public class PlayerMovement : MonoBehaviour {
     public bool sliding;
     [HideInInspector]
     public bool wallrunning;
+    [HideInInspector]
+    public bool climbing;
 
     private void Start() {
         rb = GetComponent<Rigidbody>();
@@ -124,8 +131,13 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void StateHandler() {
+        // Climbing
+        if (climbing) {
+            state = MovementState.climbing;
+            desiredMoveSpeed = climbSpeed;
+        }
         // Wallrunning
-        if (wallrunning) {
+        else if (wallrunning) {
             state = MovementState.wallrunning;
             desiredMoveSpeed = wallrunSpeed;
         }
@@ -196,6 +208,8 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void MovePlayer() {
+        if (climbingScript.exitingWall) return;
+
         // Movement Direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
