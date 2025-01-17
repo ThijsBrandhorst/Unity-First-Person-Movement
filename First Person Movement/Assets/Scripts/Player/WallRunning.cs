@@ -6,11 +6,14 @@ public class WallRunning : MonoBehaviour
     public LayerMask whatIsWall;
     public LayerMask whatIsGround;
     public float wallRunForce;
+    public float wallJumpUpForce;
+    public float wallJumpSideForce;
     public float wallClimbSpeed;
     public float maxWallRunTime;
     private float wallRunTimer;
 
     [Header("Input")]
+    public KeyCode jumpKey = KeyCode.Space;
     public KeyCode upwardsRunKey = KeyCode.LeftShift;
     public KeyCode downwardsRunKey = KeyCode.LeftControl;
     private bool upwardsRunning;
@@ -27,9 +30,18 @@ public class WallRunning : MonoBehaviour
     private bool wallLeft;
     private bool wallRight;
 
+    [Header("Exiting")]
+    private bool exitingWall;
+    public float exitWallTime;
+    private float exitWallTimer;
+
+    [Header("Gravity")]
+    public bool useGravity;
+    public float gravityCounterForce;
 
     [Header("References")]
     public Transform orientation;
+    public PlayerCam cam;
     private PlayerMovement pm;
     private Rigidbody rb;
 
@@ -68,10 +80,34 @@ public class WallRunning : MonoBehaviour
         downwardsRunning = Input.GetKey(downwardsRunKey);
 
         // Wallrunning
-        if((wallLeft || wallRight) && verticalInput > 0 && AboveGround()) {
+        if((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !exitingWall) {
             if(!pm.wallrunning)
                 StartWallRun();
+
+            if(wallRunTimer > 0) 
+                wallRunTimer -= Time.deltaTime;
+
+            if(wallRunTimer <= 0) {
+                exitingWall = true;
+                if (wallLeft || wallRight)
+                    exitWallTimer = exitWallTime;
+            }
+
+            // Walljumping
+            if(Input.GetKeyDown(jumpKey))
+                WallJump();
         } 
+        // Exiting
+        else if (exitingWall) {
+            if(pm.wallrunning)
+                StopWallRun();
+
+            if (exitWallTimer > 0)
+                exitWallTimer -= Time.deltaTime;
+
+            if (exitWallTimer <= 0)
+                exitingWall = false;
+        }
         // Nothing
         else {
             if(pm.wallrunning)
@@ -81,15 +117,20 @@ public class WallRunning : MonoBehaviour
 
     private void StartWallRun() {
         pm.wallrunning = true;
+
+        wallRunTimer = maxWallRunTime;
+
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+        // Camera effects
+        cam.DoFov(90f);
+        if (wallLeft) cam.DoTilt(-5f);
+        if (wallRight) cam.DoTilt(5f);
     }
-    
+
     private void WallRunningMovement() {
-        if (!pm.OnSlope()) {
-            rb.useGravity = false;
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        } else {
-            rb.useGravity = true;
-        }
+
+        rb.useGravity = useGravity;
 
         Vector3 wallNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
 
@@ -111,9 +152,29 @@ public class WallRunning : MonoBehaviour
             if (!pm.grounded && !(pm.OnSlope()))
                 rb.AddForce(-wallNormal * 100, ForceMode.Force);
 
+        // Weaken the gravity
+        if(useGravity)
+            rb.AddForce(transform.up * gravityCounterForce, ForceMode.Force);
     }
 
     private void StopWallRun() {
         pm.wallrunning = false;
+
+        // Reset camera effects
+        cam.DoFov(80f);
+        cam.DoTilt(0f);
+    }
+
+    private void WallJump() {
+        exitingWall = true;
+        exitWallTimer = exitWallTime;
+
+        Vector3 wallNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
+
+        Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+
+        // Resetting y velocity and adding force
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        rb.AddForce(forceToApply, ForceMode.Impulse);
     }
 }

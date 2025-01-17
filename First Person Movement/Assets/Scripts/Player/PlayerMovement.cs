@@ -64,8 +64,9 @@ public class PlayerMovement : MonoBehaviour {
 
     [HideInInspector]
     public bool grounded;
-
+    [HideInInspector]
     public bool sliding;
+    [HideInInspector]
     public bool wallrunning;
 
     private void Start() {
@@ -214,7 +215,10 @@ public class PlayerMovement : MonoBehaviour {
         else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
-        rb.useGravity = !OnSlope();
+
+        // Slope
+        if(!wallrunning)
+            rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl() {
