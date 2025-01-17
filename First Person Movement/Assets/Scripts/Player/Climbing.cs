@@ -4,7 +4,8 @@ public class Climbing : MonoBehaviour {
     [Header("References")]
     public Transform orientation;
     public Rigidbody rb;
-    public PlayerMovement pm;
+    private PlayerMovement pm;
+    private LedgeGrabbing lg;
     public LayerMask whatIsWall;
 
     [Header("Climbing")]
@@ -40,6 +41,11 @@ public class Climbing : MonoBehaviour {
     public float exitWallTime;
     private float exitWallTimer;
 
+
+    private void Start() {
+        pm = GetComponent<PlayerMovement>();
+        lg = GetComponent<LedgeGrabbing>();
+    }
     private void Update() {
         WallCheck();
         StateMachine();
@@ -49,8 +55,12 @@ public class Climbing : MonoBehaviour {
     }
 
     private void StateMachine() {
+        // Ledge grabbing
+        if(lg.holding) {
+            if(climbing) StopClimbing();
+        }
         // Climbing
-        if(wallFront && Input.GetKey(KeyCode.W) && wallLookAngle < maxWallLookAngle && !exitingWall) {
+        else if(wallFront && Input.GetKey(KeyCode.W) && wallLookAngle < maxWallLookAngle && !exitingWall) {
             if(!climbing && climbTimer > 0) 
                 StartClimbing();
 
@@ -109,6 +119,9 @@ public class Climbing : MonoBehaviour {
     }
 
     private void ClimbJump() {
+        if (pm.grounded) return;
+        if (lg.holding || lg.exitingLedge) return;
+
         exitingWall = true;
         exitWallTimer = exitWallTime;
 
